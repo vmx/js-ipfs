@@ -1,2 +1,13 @@
 // Warning: This file is automatically synced from https://github.com/ipfs/ci-sync so if you want to change it, please change it there and ask someone to sync all repositories.
-javascript(['nodejs_versions': ['8.11.1','9.2.0','10.0.0']])
+javascript([
+  'nodejs_versions': [
+    '8.11.3','10.4.1'
+  ],
+  'node_modules': [
+    'libp2p': 'github:libp2p/js-libp2p#feat/priv-net',
+    'libp2p-switch': 'github:libp2p/js-libp2p-switch#feat/priv-net',
+    'ipfsd-ctl': 'github:ipfs/js-ipfsd-ctl#fix/proc-config',
+    'libp2p-pnet': 'github:libp2p/js-libp2p-pnet#feat/initial',
+    'ipfs-repo': 'github:ipfs/js-ipfs-repo#feat/pnet'
+  ]
+])
