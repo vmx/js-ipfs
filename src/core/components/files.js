@@ -10,6 +10,7 @@ const pushable = require('pull-pushable')
 const toStream = require('pull-stream-to-stream')
 const toPull = require('stream-to-pull-stream')
 const deferred = require('pull-defer')
+const deferDuplex = require('pull-defer/duplex')
 const waterfall = require('async/waterfall')
 const isStream = require('is-stream')
 const isSource = require('is-pull-stream').isSource
@@ -156,6 +157,39 @@ module.exports = function files (self) {
     const filterFile = (file) => (restPath && file.path === restPath) || (file.path === ipfsPath)
 
     const d = deferred.source()
+
+    // console.log('vmx: components: files: i do have access to graphsync:', self._graphsync)
+
+    // NOTE vmx 2018-06-19: This is a hack in order to make the UnixFS exporter
+    // use Graphsync without many code changes
+    // self._ipld._graphsync = self._graphsync._libp2p
+    self._ipld._graphsync = deferDuplex()
+
+
+    const connectedPeers = self._graphsync._libp2p.peerBook
+      .getAllArray()
+      .filter((peer) => {
+        console.log('ipfs: i am: peerid:', self._graphsync._libp2p.peerInfo.id.toB58String())
+        // console.log('ipfs: peer in peerbook3:', peer.id.toB58String())
+        return peer.isConnected()
+      })
+      // .forEach((peer) => {
+      //   //this._onPeerConnect((peer))
+      //   console.log('ipfs: peer in peerbook4:', peer.id.toB58String())
+      // })
+
+    console.log('ipfs: connected peers:', connectedPeers)
+
+    // TODO vmx 2018-06-20: Make this more flexible, do not pick some
+    // hard-coded peer
+    const peer = connectedPeers[1]
+    console.log('ipfs: the selected peer:', peer)
+    // const peer = '/ip4/127.0.0.1/tcp/4012/ipfs/QmWqombsh5HTxYhNmZFALdSis2yfPBSfRMMUwMxZ3sqfbj'
+    // const peer = '/ip4/127.0.0.1/tcp/4022/ipfs/QmUnz5AbgVq9wFc7qDYXhgZk5UmY8PTsFUYZuTx3ghacju'
+    self._graphsync._libp2p.dialProtocol(peer.id, '/ipfs/graphsync/0.1.0', (err, conn) => {
+      console.log('ipfs: connected a graphsync client', conn)
+      self._ipld._graphsync.resolve(conn)
+    })
 
     pull(
       exporter(ipfsPath, self._ipld, options),

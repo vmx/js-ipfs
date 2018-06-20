@@ -1,0 +1,14 @@
+{
+  "name": "ipfs-example-node-two-peers",
+  "version": "0.0.1",
+  "description": "this package.json needs to exist because of new npm config https://github.com/ipfs/js-ipfs/issues/977#issuecomment-326741092",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "ipfs": "file:../../",
+    "pretty-hrtime": "^1.0.3"
+  }
+}

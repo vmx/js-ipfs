@@ -4,6 +4,7 @@ const series = require('async/series')
 const Bitswap = require('ipfs-bitswap')
 const setImmediate = require('async/setImmediate')
 const promisify = require('promisify-es6')
+const Graphsync = require('./graphsync')
 
 module.exports = (self) => {
   return promisify((callback) => {
@@ -46,6 +47,13 @@ module.exports = (self) => {
 
       self._bitswap.start()
       self._blockService.setExchange(self._bitswap)
+
+      self._graphsync = new Graphsync(
+        self._libp2pNode,
+        self._repo.blocks
+      )
+      self._graphsync.start()
+
       done()
     })
   })
